@@ -1,0 +1,42 @@
+#import numpy, matplotlib.pyplot, netCDF4
+import numpy as np
+import matplotlib.pyplot as plt
+from netCDF4 import Dataset
+
+#open data file
+nc_file = 'C:/Users/suege/Desktop/P4/gebco_2023_n-21.0_s-23.0_w35.0_e37.5.nc'
+nc = Dataset(nc_file, 'r')
+
+#read data
+lon = nc.variables['lon'][:]
+lat = nc.variables['lat'][:]
+bathymetry = nc.variables['elevation'][:]
+
+#define levels for contour plot
+levels = np.linspace(np.min(bathymetry), np.max(bathymetry), 100)
+
+#create figure
+plt.figure(figsize=(10, 6))
+
+#plot land
+plt.contourf(lon, lat, bathymetry, levels=levels, cmap='terrain', alpha=0.7)
+
+#plot water
+plt.contourf(lon, lat, bathymetry, levels=[np.min(bathymetry), 0], cmap='ocean', alpha=0.7)
+
+#add features
+plt.colorbar(label='Depth (m)')
+plt.title('Bazaruto Bathymetry', fontsize=14)
+plt.xlabel('Longitude')
+plt.ylabel('Latitude')
+plt.grid(True)
+
+#add contours
+levels = np.arange(np.nanmin(bathymetry), np.nanmax(bathymetry), 300)
+contour = plt.contour(lon, lat, bathymetry, levels=10, colors='black', linewidths=0.5)
+
+#add contours labels
+plt.clabel(contour, inline=True, fontsize=8, fmt='%1.0f')
+
+plt.show()
+
